@@ -143,28 +143,23 @@ namespace Hearts_of_Iron_IV_Tools.Country
             alreadyUsed += GetBuildingNumber(BuildingType.NUCLEAR_REACTOR);
             alreadyUsed += GetBuildingNumber(BuildingType.DOCKYARD);
             alreadyUsed += GetBuildingNumber(BuildingType.ROCKET_SITE);
-            return (byte) (GetStateCapacity(Type) - alreadyUsed);
+            return (byte) (Type.GetStateCapacity() - alreadyUsed);
         }
 
-        private byte GetStateCapacity(StateCategory state)
+        public void AddBuilding(BuildingType buildingType, byte number)
         {
-            switch (state)
+            if (buildingType == BuildingType.INDUSTRIAL_COMPLEX || buildingType == BuildingType.ARMS_FACTORY
+                || buildingType == BuildingType.NUCLEAR_REACTOR || buildingType == BuildingType.DOCKYARD
+                || buildingType == BuildingType.ROCKET_SITE)
             {
-                case StateCategory.WASTELAND: return 0;
-                case StateCategory.ENCLAVE: return 0;
-                case StateCategory.TINY_ISLAND: return 0;
-                case StateCategory.SMALL_ISLAND: return 1;
-                case StateCategory.PASTORAL: return 1;
-                case StateCategory.RURAL: return 2;
-                case StateCategory.TOWN: return 4;
-                case StateCategory.LARGE_TOWN: return 5;
-                case StateCategory.CITY: return 6;
-                case StateCategory.LARGE_CITY: return 8;
-                case StateCategory.METROPOLIS: return 10;
-                case StateCategory.MEGALOPOLIS: return 12;
-                default: throw new ArgumentException();
+                if (GetAvailableSlot() < number)
+                {
+                    throw new ArgumentException($"空建筑槽数量不足, 已有: {GetAvailableSlot()}, 需要: {number}");
+                }
             }
+            _buildingMap[buildingType] += number;
         }
+
         #region 杂
         public override int GetHashCode()
         {
@@ -172,7 +167,7 @@ namespace Hearts_of_Iron_IV_Tools.Country
             result = 31 * result + Name?.GetHashCode() ?? 0;
             result = 31 * result + Manpower.GetHashCode();
             result = 31 * result + Type.GetHashCode();
-            result = 31 * result + Owner?.GetHashCode() ?? 0;             
+            result = 31 * result + Owner?.GetHashCode() ?? 0;
             return result;
         }
 
